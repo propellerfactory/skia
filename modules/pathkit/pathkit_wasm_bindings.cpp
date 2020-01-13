@@ -395,6 +395,9 @@ struct StrokeOpts {
     SkScalar miter_limit;
     SkPaint::Join join;
     SkPaint::Cap cap;
+    SkScalar phase;
+    SkScalar dashOn;
+    SkScalar dashOff;
 };
 
 bool ApplyStroke(SkPath& path, StrokeOpts opts) {
@@ -404,7 +407,15 @@ bool ApplyStroke(SkPath& path, StrokeOpts opts) {
     p.setStrokeJoin(opts.join);
     p.setStrokeWidth(opts.width);
     p.setStrokeMiter(opts.miter_limit);
-
+    if( opts.dashOn + opts.dashOff > 0 ) {
+        SkScalar intervals[] = { opts.dashOn, opts.dashOff };
+        auto pe = SkDashPathEffect::Make(intervals, 2, opts.phase);
+        if (!pe) {
+            SkDebugf("Invalid args to dash()\n");
+            return false;
+        }
+        p.setPathEffect(pe);
+    }
     return p.getFillPath(path, &path);
 }
 
@@ -587,10 +598,13 @@ EMSCRIPTEN_BINDINGS(skia) {
         .value("SQUARE", SkPaint::Cap::kSquare_Cap);
 
     value_object<StrokeOpts>("StrokeOpts")
-        .field("width",       &StrokeOpts::width)
-        .field("miter_limit", &StrokeOpts::miter_limit)
-        .field("join",        &StrokeOpts::join)
-        .field("cap",         &StrokeOpts::cap);
+        .field("width",         &StrokeOpts::width)
+        .field("miter_limit",   &StrokeOpts::miter_limit)
+        .field("join",          &StrokeOpts::join)
+        .field("cap",           &StrokeOpts::cap)
+        .field("phase",         &StrokeOpts::phase)
+        .field("dashOn",        &StrokeOpts::dashOn)
+        .field("dashOff",       &StrokeOpts::dashOff);
 
     // Matrix
     // Allows clients to supply a 1D array of 9 elements and the bindings

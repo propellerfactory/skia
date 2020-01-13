@@ -105,6 +105,8 @@ echo "Compiling bitcode"
 
 ${NINJA} -C ${BUILD_DIR} libpathkit.a
 
+emranlib ${BUILD_DIR}/libpathkit.a
+
 echo "Generating WASM"
 
 ${EMCXX} $RELEASE_CONF -std=c++17 \

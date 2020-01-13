@@ -76,6 +76,9 @@ StrokeOpts.prototype.width;
 StrokeOpts.prototype.miter_limit;
 StrokeOpts.prototype.cap;
 StrokeOpts.prototype.join;
+StrokeOpts.prototype.phase;
+StrokeOpts.prototype.dashOn;
+StrokeOpts.prototype.dashOff;
 
 // Define CubicMap object
 var CubicMap = {};
