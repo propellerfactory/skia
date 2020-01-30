@@ -412,6 +412,7 @@ struct StrokeOpts {
     SkScalar phase;
     SkScalar dashOn;
     SkScalar dashOff;
+    SkScalar precision;
 };
 
 bool ApplyStroke(SkPath& path, StrokeOpts opts) {
@@ -431,7 +432,7 @@ bool ApplyStroke(SkPath& path, StrokeOpts opts) {
         }
         p.setPathEffect(pe);
     }
-    return p.getFillPath(path, &path);
+    return p.getFillPath(path, &path, nullptr, opts.precision);
 }
 
 //========================================================================================
@@ -619,7 +620,8 @@ EMSCRIPTEN_BINDINGS(skia) {
         .field("cap",           &StrokeOpts::cap)
         .field("phase",         &StrokeOpts::phase)
         .field("dashOn",        &StrokeOpts::dashOn)
-        .field("dashOff",       &StrokeOpts::dashOff);
+        .field("dashOff",       &StrokeOpts::dashOff)
+        .field("precision",     &StrokeOpts::precision);
 
     // Matrix
     // Allows clients to supply a 1D array of 9 elements and the bindings

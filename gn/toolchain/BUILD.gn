@@ -27,7 +27,7 @@ declare_args() {
              rebase_path("$fuchsia_toolchain_path/$target_cpu/sysroot")
     link = rebase_path("$fuchsia_toolchain_path/bin/ld.lld")
   } else {
-    target_ar = ar
+    target_ar = "emar"
     target_cc = cc
     target_cxx = cxx
   }
