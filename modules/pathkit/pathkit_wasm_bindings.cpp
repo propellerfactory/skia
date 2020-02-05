@@ -20,6 +20,7 @@
 #include "include/utils/SkParsePath.h"
 #include "src/core/SkPaintDefaults.h"
 #include "src/core/SkPathPriv.h"
+#include "src/core/SkGeometry.h"
 
 #include <emscripten/emscripten.h>
 #include <emscripten/bind.h>
@@ -59,14 +60,25 @@ JSArray EMSCRIPTEN_KEEPALIVE ToCmds(const SkPath& path) {
         case SkPathVerb::kQuad:
             cmd.call<void>("push", QUAD, pts[1].x(), pts[1].y(), pts[2].x(), pts[2].y());
             break;
-        case SkPathVerb::kConic:
+        case SkPathVerb::kConic: 
+            /*{
+                const SkScalar tol = SK_Scalar1 / 1024; // how close to a quad
+                SkAutoConicToQuads quadder;
+                const SkPoint* quadPts = quadder.computeQuads(pts, iter.conicWeight(), tol);
+                cmd.call<void>("push", QUAD, quadPts[1].fX, quadPts[1].fY, quadPts[2].fX, quadPts[2].fY);
+                for (int i = 1; i < quadder.countQuads(); ++i) {
+                    cmds.call<void>("push", cmd);
+                    cmd = emscripten::val::array();
+                    cmd.call<void>("push", QUAD, quadPts[i * 2 + 1].fX, quadPts[i * 2 + 1].fY, quadPts[i * 2 + 2].fX, quadPts[i * 2 + 2].fY);
+                }
+            }*/
             SkPoint quads[5];
             // approximate with 2^1=2 quads.
             SkPath::ConvertConicToQuads(pts[0], pts[1], pts[2], *w, quads, 1);
-            cmd.call<void>("push", QUAD, quads[1].x(), quads[1].y(), quads[2].x(), quads[2].y());
+            cmd.call<void>("push", QUAD, quads[1].x(), quads[1].y(), quads[2].x(), quads[2].y(), *w);
             cmds.call<void>("push", cmd);
             cmd = emscripten::val::array();
-            cmd.call<void>("push", QUAD, quads[3].x(), quads[3].y(), quads[4].x(), quads[4].y()); 
+            cmd.call<void>("push", QUAD, quads[3].x(), quads[3].y(), quads[4].x(), quads[4].y(), *w); 
             break;
         case SkPathVerb::kCubic:
             cmd.call<void>("push", CUBIC,
