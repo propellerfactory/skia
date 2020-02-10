@@ -403,7 +403,8 @@ bool ApplyTrim(SkPath& path, SkScalar startT, SkScalar stopT, bool isComplement)
     return false;
 }
 
-struct StrokeOpts {
+class StrokeOpts {
+public:
     // Default values are set in chaining.js which allows clients
     // to set any number of them. Otherwise, the binding code complains if
     // any are omitted.
@@ -412,8 +413,7 @@ struct StrokeOpts {
     SkPaint::Join join;
     SkPaint::Cap cap;
     SkScalar phase;
-    SkScalar dashOn;
-    SkScalar dashOff;
+    std::vector<SkScalar> intervals;
     SkScalar precision;
 };
 
@@ -425,15 +425,16 @@ bool ApplyStroke(SkPath& path, StrokeOpts opts) {
     p.setStrokeJoin(opts.join);
     p.setStrokeWidth(opts.width);
     p.setStrokeMiter(opts.miter_limit);
-    if( opts.dashOn + opts.dashOff > 0 ) {
-        SkScalar intervals[] = { opts.dashOn, opts.dashOff };
-        auto pe = SkDashPathEffect::Make(intervals, 2, opts.phase);
+    if( opts.intervals.size() > 0 ) {
+        SkScalar intervals[opts.intervals.size()];
+        std::copy(opts.intervals.begin(), opts.intervals.end(), intervals);
+        auto pe = SkDashPathEffect::Make(intervals, opts.intervals.size(), opts.phase);
         if (!pe) {
             SkDebugf("Invalid args to dash()\n");
             return false;
         }
         p.setPathEffect(pe);
-    }
+    } 
     return p.getFillPath(path, &path, nullptr, opts.precision);
 }
 
@@ -478,6 +479,10 @@ void ApplyTransform(SkPath& orig,
 // this helper which casts for us on the way to SkBits2Float.
 float SkBits2FloatUnsigned(uint32_t floatAsBits) {
     return SkBits2Float((int32_t) floatAsBits);
+}
+
+std::vector<SkScalar> EMSCRIPTEN_KEEPALIVE MakeScalarVector(void) {
+    return std::vector<SkScalar>();
 }
 
 // Binds the classes to the JS
@@ -615,14 +620,16 @@ EMSCRIPTEN_BINDINGS(skia) {
         .value("ROUND",  SkPaint::Cap::kRound_Cap)
         .value("SQUARE", SkPaint::Cap::kSquare_Cap);
 
+    register_vector<SkScalar>("vector<SkScalar>");
+    function("makeScalarVector", &MakeScalarVector);
+
     value_object<StrokeOpts>("StrokeOpts")
         .field("width",         &StrokeOpts::width)
         .field("miter_limit",   &StrokeOpts::miter_limit)
         .field("join",          &StrokeOpts::join)
         .field("cap",           &StrokeOpts::cap)
         .field("phase",         &StrokeOpts::phase)
-        .field("dashOn",        &StrokeOpts::dashOn)
-        .field("dashOff",       &StrokeOpts::dashOff)
+        .field("intervals",     &StrokeOpts::intervals)
         .field("precision",     &StrokeOpts::precision);
 
     // Matrix

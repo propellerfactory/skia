@@ -22,6 +22,7 @@
 
 var PathKit = {
 	SkBits2FloatUnsigned: function(num) {},
+	makeScalarVector: function() {},
 	_malloc: function(size) {},
 	_free: function(ptr) {},
 	onRuntimeInitialized: function() {},
@@ -70,6 +71,11 @@ var PathKit = {
 	}
 };
 
+PathKit.makeScalarVector = function() {};
+PathKit["vector<SkScalar>"] = {
+	push_back: {}
+};
+
 // Define StrokeOpts object
 var StrokeOpts = {};
 StrokeOpts.prototype.width;
@@ -77,8 +83,7 @@ StrokeOpts.prototype.miter_limit;
 StrokeOpts.prototype.cap;
 StrokeOpts.prototype.join;
 StrokeOpts.prototype.phase;
-StrokeOpts.prototype.dashOn;
-StrokeOpts.prototype.dashOff;
+StrokeOpts.prototype.intervals;
 
 // Define CubicMap object
 var CubicMap = {};

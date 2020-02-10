@@ -149,8 +149,11 @@
       opts.miter_limit = opts.miter_limit || 4;
       opts.cap = opts.cap || PathKit.StrokeCap.BUTT;
       opts.join = opts.join || PathKit.StrokeJoin.MITER;
-      opts.dashOn = opts.dashOn || 0;
-      opts.dashOff = opts.dashOff || 0;
+      var intervals = opts.intervals || [];
+      opts.intervals = PathKit.makeScalarVector()
+      for(var i = 0; i < intervals.length; i++ ) {
+        opts.intervals.push_back(intervals[i]);
+      }
       opts.phase = opts.phase || 0;
       if (this._stroke(opts)) {
         return this;
