@@ -1,0 +1,9 @@
+git clone https://github.com/emscripten-core/emsdk.git
+cd emsdk/
+git pull
+./emsdk install latest
+source "/workspace/emsdk/emsdk_env.sh"
+cd ../skia
+tools/install_dependencies.sh
+./modules/pathkit/compile.sh 
+cp out/pathkit/pathkit.* (somewhere)
