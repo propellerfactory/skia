@@ -123,9 +123,6 @@ $WASM_CONF \
 -s NO_EXIT_RUNTIME=1 \
 -s NO_FILESYSTEM=1 \
 -s STRICT=1 \
--s INITIAL_MEMORY=64MB \
--s MAXIMUM_MEMORY=128MB \
--s ALLOW_MEMORY_GROWTH=1 \
 $OUTPUT \
 $BASE_DIR/pathkit_wasm_bindings.cpp \
 ${BUILD_DIR}/libpathkit.a

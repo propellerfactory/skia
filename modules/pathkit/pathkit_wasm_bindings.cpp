@@ -75,10 +75,10 @@ JSArray EMSCRIPTEN_KEEPALIVE ToCmds(const SkPath& path) {
             SkPoint quads[5];
             // approximate with 2^1=2 quads.
             SkPath::ConvertConicToQuads(pts[0], pts[1], pts[2], *w, quads, 1);
-            cmd.call<void>("push", QUAD, quads[1].x(), quads[1].y(), quads[2].x(), quads[2].y(), *w);
+            cmd.call<void>("push", QUAD, quads[1].x(), quads[1].y(), quads[2].x(), quads[2].y());
             cmds.call<void>("push", cmd);
             cmd = emscripten::val::array();
-            cmd.call<void>("push", QUAD, quads[3].x(), quads[3].y(), quads[4].x(), quads[4].y(), *w); 
+            cmd.call<void>("push", QUAD, quads[3].x(), quads[3].y(), quads[4].x(), quads[4].y()); 
             break;
         case SkPathVerb::kCubic:
             cmd.call<void>("push", CUBIC,
